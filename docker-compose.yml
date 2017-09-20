@@ -1,18 +1,26 @@
-php:
-    image: php:fpm
-    ports:
-      - "127.0.0.1:9000:9000"
-    links:
-      - "mysql"
-    volumes:
-      - /data/zentao:/data/zentao
-      - /data/zentao/php:/usr/local/etc/php
+version: '2'
+services:
+    php:
+        image: php:fpm
+        links:
+          - "mysql"
+        volumes:
+          - ./zentaopms:/data/zentao/zentaopms
+          - ./php:/usr/local/etc/php
 
-mysql:
-    image: mysql
-    ports:
-      - "127.0.0.l:3306:3306"
-    volumes:
-      - /data/zentao/mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: zentao@mysql
+    mysql:
+        image: mysql
+        volumes:
+          - ./mysql:/var/lib/mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: zentao@mysql
+
+    nginx:
+        image: nginx
+        ports:
+          - "8080:80"
+        links:
+          - "php"
+        volumes:
+          - ./zentaopms:/data/zentao/zentaopms
+          - ./nginx/conf.d:/etc/nginx/conf.d
